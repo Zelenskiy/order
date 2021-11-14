@@ -3,8 +3,7 @@
 https://prog-help.ru/python/pyqt5-rabota-s-qtableview-sortirovka-ne-po-str-poisk-po-vybrannym-stolbcam-avto-shirina/
 https://webformyself.com/rukovodstvo-po-parsingu-xml-python/
 '''
-
-
+import codecs
 import xml.dom.minidom
 
 from PyQt5 import QtCore, QtGui, QtWidgets
@@ -12,9 +11,9 @@ import datetime as dt
 import json
 import os
 
-from PyQt5.QtWidgets import QHeaderView
+from PyQt5.QtWidgets import QHeaderView, QTableWidgetItem
 
-dir = 'd:/tmp'
+dir = 'd:\\tmp'
 file = 'list.xml'
 
 
@@ -46,10 +45,10 @@ class Ui_Dialog(object):
         self.gridLayout.setObjectName("gridLayout")
         self.horizontalLayout = QtWidgets.QHBoxLayout()
         self.horizontalLayout.setObjectName("horizontalLayout")
-        self.tableView = QtWidgets.QTableView(self.centralwidget)
-        self.tableView.setSortingEnabled(True)
-        self.tableView.setObjectName("tableView")
-        self.horizontalLayout.addWidget(self.tableView)
+        self.tableWidget = QtWidgets.QTableWidget(self.centralwidget)
+        self.tableWidget.setSortingEnabled(True)
+        self.tableWidget.setObjectName("tableWidget")
+        self.horizontalLayout.addWidget(self.tableWidget)
         self.gridLayout.addLayout(self.horizontalLayout, 0, 0, 1, 1)
 
         Dialog.setCentralWidget(self.centralwidget)
@@ -64,7 +63,7 @@ class Ui_Dialog(object):
         self.retranslateUi(Dialog)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
-        self.tableView.doubleClicked.connect(self.openDocument)
+        self.tableWidget.doubleClicked.connect(self.openDocument)
         self.model = []
 
 
@@ -73,11 +72,20 @@ class Ui_Dialog(object):
 
 
     def openDocument(self, table):
-        print(self.model.rowCount())
-        print(table.rowViewportPosition()
-              )
-        table.setItem()
+        if self.tableWidget.currentColumn() == 0:
+            item = self.tableWidget.item(self.tableWidget.currentRow(), self.tableWidget.currentColumn())
+            print()
+            s = item.text()
+            sword = r'C:\Program Files\Microsoft Office\root\Office16\WINWORD.EXE'
 
+            aAll = '"' + sword + '" '
+            param ='"' + dir + '\\' + s + '"'
+
+            k = aAll + param
+            print(k)
+            # os.system(k)
+            os.startfile(param)
+            # os.subprocess.Popen(k, shell=True)
 
     def loadData(self):
         headers = ['Файл ', 'Від ', 'Номер ', 'Статус ', 'Дата ']
@@ -89,35 +97,43 @@ class Ui_Dialog(object):
         if os.path.exists(dir + '/' + file):
             doc = xml.dom.minidom.parse(dir + '/' + file,)
             expertise = doc.getElementsByTagName("doc")
+            self.tableWidget.setRowCount(len(expertise))
+            self.tableWidget.setColumnCount(4)
             for i, skill in enumerate(expertise):
-                print(skill.getAttribute("name"))
-                item = [
-                    skill.getAttribute("name"),
-                    skill.getAttribute("date"),
-                    skill.getAttribute("num"),
-                    skill.getAttribute("status"),
-
-                ]
-                items.append(item)
+                # print(skill.getAttribute("name"))
+                # item = [
+                #     skill.getAttribute("name"),
+                #     skill.getAttribute("date"),
+                #     skill.getAttribute("num"),
+                #     skill.getAttribute("status"),
+                #
+                # ]
+                # items.append(item)
+                item_0 = QTableWidgetItem(skill.getAttribute("name"))
+                item_1 = QTableWidgetItem(skill.getAttribute("date"))
+                item_2 = QTableWidgetItem(skill.getAttribute("num"))
+                item_3 = QTableWidgetItem(skill.getAttribute("status"))
+                self.tableWidget.setItem(i, 0, item_0)
+                self.tableWidget.setItem(i, 1, item_1)
+                self.tableWidget.setItem(i, 2, item_2)
+                self.tableWidget.setItem(i, 3, item_3)
         else:
             print('файлу немає')
 
-
-        self.fillTable(self.model, items)
-        self.tableView.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
+        self.tableWidget.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
+        self.tableWidget.setHorizontalHeaderLabels(headers)
 
         # print(path)
 
-    def fillTable(self, model, items):
-        for row_number, row_data in enumerate(items):
-            tableitem = []
-            model.insertRow(row_number)
-            for value in row_data:
-                item = QtGui.QStandardItem(str(value))
-                tableitem.append(item)
-            model.insertRow(row_number, tableitem)
-        self.tableView.setModel(model)
-
+    # def fillTable(self, model, items):
+    #     for row_number, row_data in enumerate(items):
+    #         tableitem = []
+    #         model.insertRow(row_number)
+    #         for value in row_data:
+    #             item = QtGui.QStandardItem(str(value))
+    #             tableitem.append(item)
+    #         model.insertRow(row_number, tableitem)
+    #     # self.tableWidget.setModel(model)
 
 
 if __name__ == "__main__":
