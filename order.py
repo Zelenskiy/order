@@ -64,39 +64,10 @@ class Ui_Dialog(object):
         self.retranslateUi(Dialog)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
-    # def setupUi(self, Dialog):
-    #     Dialog.setObjectName("Dialog")
-    #     Dialog.resize(800, 600)
-    #
-    #
-    #
-    #     # self.pushButton = QtWidgets.QPushButton(Dialog)
-    #     # self.pushButton.setGeometry(QtCore.QRect(20, 270, 75, 23))
-    #     # self.pushButton.setObjectName("pushButton")
-    #     # self.pushButton.clicked.connect(self.loadData)
-    #
-    #
-    #     self.tableView = QtWidgets.QTableView(Dialog)
-    #     self.tableView.setGeometry(QtCore.QRect(10, 10, 780, 580))
-    #     self.tableView.setSortingEnabled(True)
-    #     self.tableView.setObjectName("tableView")
-    #
-    #
-    #
-    #     # self.lineEdit = QtWidgets.QLineEdit(Dialog)
-    #     # self.lineEdit.setGeometry(QtCore.QRect(340, 270, 191, 20))
-    #     # self.lineEdit.setObjectName("lineEdit")
-    #
-    #
-    #
-    #     self.retranslateUi(Dialog)
-    #     QtCore.QMetaObject.connectSlotsByName(Dialog)
+
 
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
-        # Dialog.setWindowTitle(_translate("Dialog", "Dialog"))
-        # self.pushButton.setText(_translate("Dialog", "Загрузить"))
-        # self.lineEdit.setPlaceholderText(_translate("Dialog", "Поиск по имени или ID"))
 
 
 
@@ -108,12 +79,8 @@ class Ui_Dialog(object):
         # Читаємо з файлу
         items = []
         if os.path.exists(dir + '/' + file):
-            # f = open(dir + '/' + file, 'r')
             doc = xml.dom.minidom.parse(dir + '/' + file,)
-            # print(doc.nodeName)
-            # print(doc.firstChild.tagName)
             expertise = doc.getElementsByTagName("doc")
-            # print("%d expertise:" % expertise.length)
             for i, skill in enumerate(expertise):
                 print(skill.getAttribute("name"))
                 item = [
@@ -127,15 +94,6 @@ class Ui_Dialog(object):
         else:
             print('файлу немає')
 
-        # items = [
-        #     ['Oleg', 22.98, 1587900157, dt.date(1998, 9, 5)],
-        #     ['Max', 223.05, 1587900543, dt.date(2000, 9, 5)],
-        #     ['Vladimir324235576576294592', -99.12, 1587900003, dt.date(2001, 9, 5)],
-        #     ['Anton', -11.32, 1587900322, dt.date(1998, 3, 5)],
-        #     ['Глеб', 17.21, 1587900932, dt.date(1998, 4, 5)],
-        #     ['Nataliya', 989.16, 1587900113, dt.date(1998, 5, 5)],
-        #     ['Виталий', -233.04, 1587900199, dt.date(1998, 9, 6)]
-        # ]
 
         self.fillTable(model, items)
         self.tableView.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
