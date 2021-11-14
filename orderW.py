@@ -20,20 +20,14 @@ file = 'list.xml'
 class Ui_Dialog(object):
     resized = QtCore.pyqtSignal()
 
-    # def __init__(self, parent=None):
-    #     super(Ui_Dialog, self).__init__(parent=parent)
-    #     ui = Ui_Dialog()
-    #     ui.setupUi(self)
-    #     self.resized.connect(self.someFunction)
 
     def __init__(self):
         super(Ui_Dialog, self).__init__()
-        print(444444444444)
 
-        #
+
 
     def someFunction(self):
-        print(444444444444)
+        pass
 
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
@@ -76,29 +70,22 @@ class Ui_Dialog(object):
             item = self.tableWidget.item(self.tableWidget.currentRow(), self.tableWidget.currentColumn())
             print()
             s = item.text()
-            sword = r'C:\Program Files\Microsoft Office\root\Office16\WINWORD.EXE'
-
-            aAll = '"' + sword + '" '
             param ='"' + dir + '\\' + s + '"'
-
-            k = aAll + param
-            print(k)
-            # os.system(k)
             os.startfile(param)
-            # os.subprocess.Popen(k, shell=True)
+
+
 
     def loadData(self):
-        headers = ['Файл ', 'Від ', 'Номер ', 'Статус ', 'Дата ']
+        headers = ['Файл ', 'Від ', 'Номер ', '', 'Статус ', 'Дата ']
         self.model = QtGui.QStandardItemModel()
         self.model.setHorizontalHeaderLabels(headers)
-
         # Читаємо з файлу
         items = []
         if os.path.exists(dir + '/' + file):
-            doc = xml.dom.minidom.parse(dir + '/' + file,)
+            doc = xml.dom.minidom.parse(dir + '/' + file)
             expertise = doc.getElementsByTagName("doc")
             self.tableWidget.setRowCount(len(expertise))
-            self.tableWidget.setColumnCount(4)
+            self.tableWidget.setColumnCount(len(headers))
             for i, skill in enumerate(expertise):
                 # print(skill.getAttribute("name"))
                 # item = [
@@ -111,16 +98,26 @@ class Ui_Dialog(object):
                 # items.append(item)
                 item_0 = QTableWidgetItem(skill.getAttribute("name"))
                 item_1 = QTableWidgetItem(skill.getAttribute("date"))
-                item_2 = QTableWidgetItem(skill.getAttribute("num"))
-                item_3 = QTableWidgetItem(skill.getAttribute("status"))
+                item_2_3 = skill.getAttribute("num")
+
+                if item_2_3.find('-') > -1:
+                    n = item_2_3.find('-')
+                    x2 = item_2_3[:n]
+                    x3 = item_2_3[n+1:]
+                    self.tableWidget.setItem(i, 2, QTableWidgetItem(x2))
+                    self.tableWidget.setItem(i, 3, QTableWidgetItem(x3))
+                item_4 = QTableWidgetItem(skill.getAttribute("status"))
                 self.tableWidget.setItem(i, 0, item_0)
                 self.tableWidget.setItem(i, 1, item_1)
-                self.tableWidget.setItem(i, 2, item_2)
-                self.tableWidget.setItem(i, 3, item_3)
+                self.tableWidget.setItem(i, 4, item_4)
         else:
             print('файлу немає')
 
+        # self.tableWidget.resizeColumnsToContents()
         self.tableWidget.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
+        self.tableWidget.horizontalHeader().resizeSection(2, 50)
+        self.tableWidget.horizontalHeader().resizeSection(3, 50)
+        # self.tableWidget.horizontalHeader().setSectionResizeMode(3, QHeaderView.Stretch)
         self.tableWidget.setHorizontalHeaderLabels(headers)
 
         # print(path)
@@ -135,12 +132,27 @@ class Ui_Dialog(object):
     #         model.insertRow(row_number, tableitem)
     #     # self.tableWidget.setModel(model)
 
+# class MyWindow(QtWidgets.QMainWindow()):
+
+class Window(QtWidgets.QMainWindow):
+    windowClose = QtCore.pyqtSignal()
+
+    def closeEvent(self, event):
+        self.windowClose.emit()
+        print('close')
+        saveData()
+        return super(Window, self).closeEvent(event)
+
+def saveData():
+    print ('save...')
+    print(ui.tableWidget)
 
 if __name__ == "__main__":
     import sys
 
     app = QtWidgets.QApplication(sys.argv)
-    Dialog = QtWidgets.QMainWindow()
+    Dialog = Window()
+    # Dialog = QtWidgets.QMainWindow()
     ui = Ui_Dialog()
     ui.setupUi(Dialog)
     Dialog.setWindowTitle("Реєстратор документів")
