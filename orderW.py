@@ -12,10 +12,13 @@ import json
 import os
 import sys
 from lxml import etree as ET
+from pathlib import Path
+
 
 from PyQt5.QtWidgets import QHeaderView, QTableWidgetItem
 
-dir = 'd:\\tmp\\'
+dir = ''
+# dir = 'd:\\tmp\\'
 file = 'list.xml'
 
 
@@ -78,7 +81,16 @@ class Ui_Dialog(object):
 
 
     def loadData(self):
-        headers = ['Файл ', 'Від ', 'Номер ', '', 'Статус ', 'Дата ']
+        # Читаємо файли документів
+        colorNoFile = QtGui.QColor(155, 155, 155)
+        source_dir = Path(dir)
+        files = source_dir.glob('*.doc*')
+        ff = []
+        for file_ in files:
+            s = file_.name
+            ff.append(s)
+
+        headers = ['Файл ', 'Від ', 'Номер ', '', 'Статус ', 'Дата ', '']
         self.model = QtGui.QStandardItemModel()
         self.model.setHorizontalHeaderLabels(headers)
         # Читаємо з файлу
@@ -89,15 +101,9 @@ class Ui_Dialog(object):
             self.tableWidget.setRowCount(len(expertise))
             self.tableWidget.setColumnCount(len(headers))
             for i, skill in enumerate(expertise):
-                # print(skill.getAttribute("name"))
-                # item = [
-                #     skill.getAttribute("name"),
-                #     skill.getAttribute("date"),
-                #     skill.getAttribute("num"),
-                #     skill.getAttribute("status"),
-                #
-                # ]
-                # items.append(item)
+                nameFile = skill.getAttribute("name")
+                items.append(nameFile)
+
                 item_0 = QTableWidgetItem(skill.getAttribute("name"))
                 x = skill.getAttribute("date")
                 ss = x.split('.')
@@ -119,6 +125,31 @@ class Ui_Dialog(object):
                 self.tableWidget.setItem(i, 0, item_0)
                 self.tableWidget.setItem(i, 1, item_1)
                 self.tableWidget.setItem(i, 4, item_4)
+                if nameFile in ff:
+                    item_6 = QTableWidgetItem("Є")
+                    self.tableWidget.setItem(i, 6, item_6)
+                else:
+                    item_6 = QTableWidgetItem("Немає")
+                    self.tableWidget.setItem(i, 6, item_6)
+                    for j in range(self.tableWidget.columnCount()):
+                        try:
+                            self.tableWidget.item(i, j).setForeground(colorNoFile)
+                        except:
+                            pass
+            for f in ff:
+                if f in items:
+                    pass
+                else:
+                    self.tableWidget.setRowCount(self.tableWidget.rowCount()+1)
+                    n = self.tableWidget.rowCount()-1
+                    self.tableWidget.setItem(n, 0, QTableWidgetItem(f))
+                    self.tableWidget.setItem(n, 1, QTableWidgetItem(''))
+                    self.tableWidget.setItem(n, 2, QTableWidgetItem(''))
+                    self.tableWidget.setItem(n, 3, QTableWidgetItem(''))
+                    self.tableWidget.setItem(n, 4, QTableWidgetItem(''))
+                    self.tableWidget.setItem(n, 6, QTableWidgetItem(''))
+
+
         else:
             print('файлу немає')
 
@@ -126,9 +157,9 @@ class Ui_Dialog(object):
         self.tableWidget.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
         self.tableWidget.horizontalHeader().resizeSection(2, 50)
         self.tableWidget.horizontalHeader().resizeSection(3, 50)
+        self.tableWidget.horizontalHeader().resizeSection(6, 20)
         self.tableWidget.setHorizontalHeaderLabels(headers)
 
-        # Читаємо файли
 
 
 
