@@ -7,10 +7,15 @@ import codecs
 import xml.dom.minidom
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-import datetime as dt
+import time
+
 import json
+from datetime import datetime
+
 import os
 import sys
+
+from PyQt5.QtCore import QDate
 from lxml import etree as ET
 from pathlib import Path
 
@@ -18,7 +23,7 @@ from pathlib import Path
 from PyQt5.QtWidgets import QHeaderView, QTableWidgetItem
 
 dir = ''
-# dir = 'd:\\tmp\\'
+dir = 'd:\\tmp\\'
 file = 'list.xml'
 
 
@@ -50,6 +55,25 @@ class Ui_Dialog(object):
         self.horizontalLayout.addWidget(self.tableWidget)
         self.gridLayout.addLayout(self.horizontalLayout, 0, 0, 1, 1)
 
+
+        self.calendarWidget = QtWidgets.QCalendarWidget(self.centralwidget)
+        self.calendarWidget.setGeometry(QtCore.QRect(90, 40, -271, -201))
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.calendarWidget.sizePolicy().hasHeightForWidth())
+        self.calendarWidget.setSizePolicy(sizePolicy)
+        self.calendarWidget.setLocale(QtCore.QLocale(QtCore.QLocale.Ukrainian, QtCore.QLocale.Ukraine))
+        self.calendarWidget.setHorizontalHeaderFormat(QtWidgets.QCalendarWidget.ShortDayNames)
+        self.calendarWidget.setVerticalHeaderFormat(QtWidgets.QCalendarWidget.NoVerticalHeader)
+        self.calendarWidget.setObjectName("calendarWidget")
+        self.calendarWidget.clicked.connect(self.setDate)
+
+
+        Dialog.setCentralWidget(self.centralwidget)
+
+
+
         Dialog.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(Dialog)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 756, 21))
@@ -63,20 +87,46 @@ class Ui_Dialog(object):
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
         self.tableWidget.doubleClicked.connect(self.openDocument)
+        self.tableWidget.clicked.connect(self.clickCell)
         self.model = []
 
 
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
 
+    def clickCell(self):
+        r = self.tableWidget.currentRow()
+        c = self.tableWidget.currentColumn()
+        text = self.tableWidget.item(r, c).text()
+        # if c == 1:
+        #     cursor = QtGui.QCursor()
+        #     xCur = cursor.pos().x()
+        #     yCur = cursor.pos().y()
+        #     xWindow = Dialog.geometry().x()
+        #     yWindow = Dialog.geometry().y()
+        #     print()
+        #     print(text)
+        #     date_time_obj = time.strptime(text, "%Y-%m-%d")
+        #     date = QDate(date_time_obj.tm_year, date_time_obj.tm_mon, date_time_obj.tm_mday)
+        #     self.calendarWidget.setSelectedDate(date)
+        #     self.calendarWidget.setGeometry(QtCore.QRect(xCur-xWindow, yCur-yWindow, 271, 201))
+        #     # self.calendarWidget.setGeometry(QtCore.QRect(90, 40, xCur+xWindow, yCur+yWindow))
+        # else:
+        #     self.calendarWidget.setGeometry(QtCore.QRect(90, 40, -271, -201))
+
+
+    def setDate(self):
+        print('999999')
+        self.calendarWidget.setGeometry(QtCore.QRect(90, 40, -271, -201))
 
     def openDocument(self, table):
         if self.tableWidget.currentColumn() == 0:
             item = self.tableWidget.item(self.tableWidget.currentRow(), self.tableWidget.currentColumn())
-            print()
+            item6 = self.tableWidget.item(self.tableWidget.currentRow(), 6).text()
             s = item.text()
             param ='"' + dir + s + '"'
-            os.startfile(param)
+            if item6 == "Є":
+                os.startfile(param)
 
 
 
